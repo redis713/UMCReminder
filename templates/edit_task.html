@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Редактировать задачу{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Редактировать задачу</h1>
+    <form method="post">
+        <label for="title">Название:</label>
+        <input type="text" id="title" name="title" value="{{ task.title }}" required>
+
+        <label for="description">Описание:</label>
+        <input type="text" id="description" name="description" value="{{ task.description }}">
+
+        <label for="deadline">Дедлайн:</label>
+        <input type="datetime-local" id="deadline" name="deadline" value="{{ task.deadline.strftime('%Y-%m-%dT%H:%M') }}" required>
+
+        <label for="users_ids">Кому:</label>
+        <select name="user_ids" id="users_ids" multiple required>
+            {% for user in users %}
+                <option value="{{ user.id }}" {% if user in task.users %}selected{% endif %}>{{ user.name }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Изменить</button>
+    </form>
+</div>
+{% endblock %}

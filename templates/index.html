@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Список задач{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Список активных задач</h1>
+    {% if tasks|selectattr("completed", "equalto", False)|list %}
+        <table>
+            <tr>
+                <th>Задача</th>
+                <th>Время</th>
+                <th>Для кого</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            {% for task in tasks %}
+            {% if not task.completed %}
+            <tr>
+                <td>{{ task.title }}</td>
+                <td>{{ task.deadline.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>
+                    {% for user in task.users %}
+                        {{ user.name }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% if not task.completed %}
+                    <button class="btn-complete" data-url="{{ url_for('complete_task', task_id=task.id) }}">Отметить как выполненный</button>
+                    {% else %}
+                        (✅ Выполнено)
+                    {% endif %}
+                </td>
+                <td><a href="{{ url_for('edit_task', task_id=task.id) }}"><button>Редактировать</button></a></td>
+                <td><button class="btn-delete" data-url="{{ url_for('delete_task', task_id=task.id) }}" data-type="task">Удалить</button></td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </table
+    {% else %}
+        <p>Пока нет активных задач</p>
+    {% endif %}
+</div>
+
+
+<div class="card">
+    <h1>Список выполненных задач</h1>
+    {% if tasks|selectattr("completed", "equalto", True)|list %}
+        <table>
+            <tr>
+                <th>Задача</th>
+                <th>Время</th>
+                <th>Для кого</th>
+                <th>Статус</th>
+                <th></th>
+                <th></th>
+            </tr>
+            {% for task in tasks %}
+            {% if task.completed %}
+            <tr>
+                <td>{{ task.title }}</td>
+                <td>{{ task.deadline }}</td>
+                <td>
+                    {% for user in task.users %}
+                        {{ user.name }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% if not task.completed %}
+                        <a href="/done/{{ task.id }}">[Отметить как выполненный]</a>
+                    {% else %}
+                        (✅ Выполнено)
+                    {% endif %}
+                </td>
+                <td><a href="{{ url_for('edit_task', task_id=task.id) }}"><button>Редактировать</button></a></td>
+                <td><button class="btn-delete" data-url="{{ url_for('delete_task', task_id=task.id) }}">Удалить</button></td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>Пока нет выполненных задач</p>
+    {% endif %}
+</div>
+{% endblock %}
