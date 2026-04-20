@@ -129,7 +129,7 @@ def delete_task(task_id):
 @app.route('/api/tasks')
 def api_tasks():
     now = datetime.utcnow()
-    future = now + timedelta(days=3)
+    future = now + timedelta(days=7)
 
     tasks = Task.query.filter(
         Task.completed == False,
