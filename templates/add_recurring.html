@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Добавить регулярную задачу{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Добавить регулярную задачу</h1>
+    <form method="post">
+        <label for="title">Название:</label>
+        <input type="text" id="title" name="title" required>
+
+        <label for="description">Описание:</label>
+        <input type="text" id="description" name="description">
+
+        <label>Повторять каждые N месяцев:</label>
+        <input type="number" name="interval" min="1" value="1" required>
+
+        <label>Дата первого запуска:</label>
+        <input type="datetime-local" name="start_date" required>
+
+        <label>Ответственные:</label>
+        <select name="user_ids" id="users_ids" multiple required>
+            {% for user in users %}
+                <option value="{{ user.id }}">{{ user.name }}</option>
+            {% endfor %}
+        </select>
+        <br>
+
+        <button type="submit">Создать</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,10 +1,15 @@
 /* Общий фон и шрифт */
 body {
     font-family: "Segoe UI", Roboto, sans-serif;
-    background-color: #f4f6f8;
+
+    /*background-color: #f4f6f8;*/
+    background: linear-gradient(to bottom, #a8e6cf, #dcedc1);
+    min-height: 100%;
+    background-attachment: fixed;
     margin: 0;
     padding: 0;
     color: #333;
+
 }
 
 /* Навигация */
@@ -137,12 +142,12 @@ table th {
     background-color: #f0f0f0;
 }
 
-.a_add_user_button {
+.a_add_user_button, .a_add_recurring_button {
     text-decoration: none;
     margin-top: 40px;
 }
 
-.add_user_button {
+.add_user_button, .add_recurring_button {
     border: 2px solid #f0f0f0;
     border-radius: 10px;
     padding: 20px;
@@ -151,7 +156,7 @@ table th {
     transition: .2s;
 }
 
-.add_user_button:hover {
+.add_user_button:hover, .add_recurring_button:hover {
     background-color: #f0f0f0;
 }
 
@@ -203,6 +208,15 @@ table th {
   color: white;
 }
 
+.btn-delete:hover {
+    background-color: #FF746C;
+    color: #fff;
+}
+
+.btn-complete:hover {
+    background-color: #d9ffd3;
+}
+
 /* Анимация появления */
 @keyframes showModal {
   from {
@@ -215,3 +229,66 @@ table th {
   }
 }
 
+
+
+/*
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to bottom, #a8e6cf, #dcedc1);
+    height: 100vh;
+    overflow: hidden;
+    font-family: sans-serif;
+}
+
+
+.leaf {
+    position: absolute;
+    top: -50px;
+    width: 30px;
+    height: 30px;
+    background-image: url('https://i.imgur.com/6vR9jGx.png');
+    background-size: cover;
+    opacity: 0.8;
+    animation: fall linear infinite;
+}
+
+
+@keyframes fall {
+    0% {
+        transform: translateX(0) rotate(0deg);
+        top: -50px;
+    }
+    100% {
+        transform: translateX(100px) rotate(360deg);
+        top: 100vh;
+    }
+}
+
+
+.leaf:nth-child(1) {
+    left: 10%;
+    animation-duration: 8s;
+    animation-delay: 0s;
+}
+.leaf:nth-child(2) {
+    left: 30%;
+    animation-duration: 10s;
+    animation-delay: 2s;
+}
+.leaf:nth-child(3) {
+    left: 50%;
+    animation-duration: 12s;
+    animation-delay: 4s;
+}
+.leaf:nth-child(4) {
+    left: 70%;
+    animation-duration: 9s;
+    animation-delay: 1s;
+}
+.leaf:nth-child(5) {
+    left: 90%;
+    animation-duration: 11s;
+    animation-delay: 3s;
+}
+*/

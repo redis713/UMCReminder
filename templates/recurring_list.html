@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Список шаблонов для регулярных задач{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Список шаблонов для регулярных задач</h1>
+    {% if recurring_tasks %}
+        <table>
+            <tr>
+                <th>Задача</th>
+                <th>Следующий дедлайн</th>
+                <th>Повторять каждые N месяцев:</th>
+                <th>Для кого</th>
+                <th></th>
+            </tr>
+            {% for rt in recurring_tasks %}
+            <tr>
+                <td>{{ rt.title }}</td>
+                <td>{{ rt.next_run.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>{{ rt.interval_months }}</td>
+                <td>
+                    {% for user in rt.users%}
+                        {{ user.name }} {% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td><button class="btn-delete" data-url="{{ url_for('delete_recurring', rt_id=rt.id) }} " data-type="recurring">Удалить</button></td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>Пока нет шаблонов для регулярных задач</p>
+    {% endif %}
+    <a href="{{ url_for('add_recurring') }}" class="a_add_recurring_button">
+    <div class="add_recurring_button">Добавить шаблон для регулярных задач</div>
+    </a>
+</div>
+{% endblock %}

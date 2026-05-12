@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
-from models import db, Task, User
+from zoneinfo import ZoneInfo
+from flask import Flask, render_template, request, redirect, url_for
+from models import db, Task, User, RecurringTask
 from config import Config
 from flask_migrate import Migrate
-#from scheduler import init_scheduler
 from flask import jsonify
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
+from scheduler import generate_tasks, write_month
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -15,7 +16,7 @@ migrate = Migrate(app, db)
 
 @app.route("/")
 def index():
-    tasks = Task.query.order_by(Task.deadline).all()
+    tasks = Task.query.order_by(Task.deadline.desc()).all()
     users = User.query.all()
     return render_template("index.html", tasks=tasks, users=users)
 
@@ -125,10 +126,79 @@ def delete_task(task_id):
     db.session.commit()
     return redirect(url_for('index'))
 
+@app.route('/recurring_list')
+def recurring_list():
+    recurring_tasks = RecurringTask.query.all()
+    return render_template("recurring_list.html", recurring_tasks=recurring_tasks)
+
+def edit_recurring(rt_id):
+    rt = RecurringTask.query.get(rt_id)
+
+    if request.method == 'POST':
+        rt.title = request.form['title']
+        rt.description = request.form['description']
+        rt.interval_months = request.form['interval_months']
+        rt.next_run = datetime.strptime(request.form['next_run'], "%Y-%m-%dT%H:%M")
+
+
+
+
+@app.route('/add_recurring', methods=['GET', 'POST'])
+def add_recurring():
+    if request.method == 'POST':
+        title = request.form['title']
+        description = request.form['description']
+        interval = int(request.form['interval'])
+        #start_date = datetime.strptime(request.form['start_date'], "%Y-%m-%d").date()
+        start_date = datetime.strptime(request.form['start_date'], "%Y-%m-%dT%H:%M")
+        start_date = start_date.replace(tzinfo=ZoneInfo("Asia/Irkutsk")) # чтобы потом сравнивать с текущим временем нормально
+        user_ids = request.form.getlist('user_ids')  # список id из формы
+
+        month = start_date.month
+
+
+        rtask = RecurringTask(
+            title=title,
+            description=description,
+            interval_months=interval,
+            next_run=start_date
+        )
+
+        task = Task(
+            title=title + write_month(month),
+            description=description,
+            deadline=start_date
+        )
+
+        for uid in user_ids:
+            user = User.query.get(int(uid))
+            if user:
+                rtask.users.append(user)
+                task.users.append(user)
+
+        #если дата задачи после сегодняшней даты, то создаем ее сразу. В остальных случаях пусть работает scheduler
+        if start_date > datetime.now(ZoneInfo('Asia/Irkutsk')):
+            db.session.add(task)
+        db.session.add(rtask)
+        db.session.commit()
+
+        return redirect('recurring_list')
+
+    users = User.query.all()
+    return render_template('add_recurring.html', users=users)
+
+@app.route('/delete_recurring/<int:rt_id>')
+def delete_recurring(rt_id):
+    rt = RecurringTask.query.get(rt_id)
+    db.session.delete(rt)
+    db.session.commit()
+    return redirect(url_for('recurring_list'))
+
 
 @app.route('/api/tasks')
 def api_tasks():
-    now = datetime.utcnow()
+    #now = datetime.utcnow()
+    now = datetime.now(ZoneInfo('Asia/Irkutsk'))
     future = now + timedelta(days=7)
 
     tasks = Task.query.filter(
@@ -147,6 +217,11 @@ def api_tasks():
         for t in tasks
     ])
 
+
+@app.before_request
+def run_scheduler():
+    generate_tasks()
+    #print('every time')
 
 if __name__ == '__main__':
     #with app.app_context():

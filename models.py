@@ -10,6 +10,12 @@ task_user = db.Table(
     db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True)
 )
 
+recurring_user = db.Table(
+    "recurring_user",
+    db.Column("recurring_id", db.Integer, db.ForeignKey("recurring_task.id"), primary_key=True),
+    db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True)
+)
+
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -24,9 +30,32 @@ class Task(db.Model):
         back_populates="tasks"
     )
 
-    def is_due_soon(self):
-        now = datetime.utcnow()
-        return (self.deadline - now).days <= 3 and not self.completed
+    recurring_id = db.Column(db.Integer, db.ForeignKey('recurring_task.id'), nullable=True)
+
+    #def is_due_soon(self):
+    #    now = datetime.utcnow()
+    #    return (self.deadline - now).days <= 3 and not self.completed
+
+
+class RecurringTask(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+    title = db.Column(db.String(255))
+    description = db.Column(db.Text)
+
+    interval_months = db.Column(db.Integer, nullable=False)
+    next_run = db.Column(db.DateTime, nullable=False)
+
+    #active = db.Column(db.Boolean, default=True)
+
+    # связь с обычными задачами
+    tasks = db.relationship('Task', backref='recurring', lazy=True)
+
+    users = db.relationship(
+        "User",
+        secondary=recurring_user,
+        backref="recurring_tasks"
+    )
 
 
 class User(db.Model):

@@ -18,6 +18,8 @@ function for_delete() {
       btn.addEventListener("click", () => {
         if (btn.dataset.type == "user")
             modalMessage.textContent = "Точно удалить пользователя?"
+        else if (btn.dataset.type == "recurring")
+            modalMessage.textContent = "Точно удалить шаблон?"
         else
             modalMessage.textContent = "Точно удалить задачу?";
         yesBtn.href = btn.dataset.url;
