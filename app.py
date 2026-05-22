@@ -78,13 +78,15 @@ def add_task():
         user_ids = request.form.getlist('user_ids')  # список id из формы
 
         task = Task(title=title, description=description, deadline=deadline)
+        db.session.add(task)
+
         for uid in user_ids:
             user = User.query.get(int(uid))
             if user:
                 task.users.append(user)
 
-        db.session.add(task)
         db.session.commit()
+
         return redirect(url_for('index'))
 
     users = User.query.all()
@@ -164,11 +166,17 @@ def add_recurring():
             next_run=start_date
         )
 
+        db.session.add(rtask)
+        db.session.flush()
+
         task = Task(
             title=title + write_month(month),
             description=description,
-            deadline=start_date
+            deadline=start_date,
+            recurring_id=rtask.id
         )
+
+        db.session.add(task)
 
         for uid in user_ids:
             user = User.query.get(int(uid))
@@ -176,10 +184,6 @@ def add_recurring():
                 rtask.users.append(user)
                 task.users.append(user)
 
-        #если дата задачи после сегодняшней даты, то создаем ее сразу. В остальных случаях пусть работает scheduler
-        if start_date > datetime.now(ZoneInfo('Asia/Irkutsk')):
-            db.session.add(task)
-        db.session.add(rtask)
         db.session.commit()
 
         return redirect('recurring_list')

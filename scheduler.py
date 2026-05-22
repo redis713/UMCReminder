@@ -9,16 +9,18 @@ def write_month(month):
     return ' (' + months_words[month] + ')'
 
 
-
+'''
+# без сохранения времени, поменяет на 00:00
 def add_months(d, months):
     month = d.month - 1 + months
     year = d.year + month // 12
     month = month % 12 + 1
     day = min(d.day, calendar.monthrange(year, month)[1])
     return datetime(year, month, day)
-
-
 '''
+
+
+#с сохранением времени
 def add_months(dt, months):
     month = dt.month - 1 + months
     year = dt.year + month // 12
@@ -26,7 +28,7 @@ def add_months(dt, months):
     day = min(dt.day, calendar.monthrange(year, month)[1])
 
     return dt.replace(year=year, month=month, day=day)
-'''
+
 
 def generate_tasks():
     today = datetime.combine(date.today(), datetime.min.time())
