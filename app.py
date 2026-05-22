@@ -16,7 +16,7 @@ migrate = Migrate(app, db)
 
 @app.route("/")
 def index():
-    tasks = Task.query.order_by(Task.deadline.desc()).all()
+    tasks = Task.query.order_by(Task.deadline).all()
     users = User.query.all()
     return render_template("index.html", tasks=tasks, users=users)
 
