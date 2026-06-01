@@ -1,0 +1,30 @@
+{% extends "base1.html" %}
+
+{% block content %}
+<div class="tasks-grid">
+    {% for item in tasks %}
+
+        <div class="task-card {{ item.priority }}">
+
+            <div class="task-title">
+                {% if item.priority == "overdue" %}
+                    <span class="skull">☠</span>
+                {% endif %}
+                {{ item.task.title }}
+            </div>
+
+            <div class="task-deadline">
+                ⏰ {{ item.task.deadline.strftime('%d.%m %H:%M') }}
+            </div>
+
+            <div class="task-desc">
+                {{ item.task.description }}
+            </div>
+
+
+
+        </div>
+
+    {% endfor %}
+</div>
+{% endblock %}

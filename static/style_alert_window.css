@@ -1,0 +1,133 @@
+/*окошко для оповещений*/
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+
+    font-family: "Segoe UI";
+
+
+    overflow: hidden;
+}
+
+.container {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.tasks-grid {
+
+    box-sizing: border-box;
+
+    width: 100vw;
+    height: 100vh;
+
+    padding: 12px;
+
+    display: grid;
+
+    gap: 12px;
+
+    /*
+        Автоматически:
+        - 1 колонка если мало места
+        - 2-3-4 если много
+    */
+    grid-template-columns:
+        repeat(auto-fit, minmax(260px, 1fr));
+
+    /*
+        Карточки растягиваются
+    */
+    align-content: stretch;
+}
+
+.task-card {
+
+    border-radius: 14px;
+
+    padding: 14px;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+
+    min-height: 140px;
+
+    transition: transform 0.15s;
+    justify-content: center;
+    align-items: center;
+}
+
+.task-card:hover {
+    transform: scale(1.01);
+}
+
+
+.safe {
+    background: #8bd17c;
+}
+
+.warning {
+    background: #ffe066;
+}
+
+.danger {
+    background: #ff8787;
+    animation: pulse 1.2s infinite;
+}
+
+.overdue {
+    background: #c92a2a;
+    color: white;
+
+    animation: pulse 1.2s infinite;
+}
+
+@keyframes pulse {
+
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.02);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.task-title {
+    font-size: clamp(18px, 2vw, 28px);
+    font-weight: bold;
+
+    margin-bottom: 10px;
+}
+
+.task-deadline {
+    font-size: clamp(15px, 1.2vw, 24px);
+
+    margin-bottom: 10px;
+
+    opacity: 0.8;
+}
+
+.task-desc {
+
+    font-size: clamp(14px, 1.2vw, 22px);
+
+    overflow: hidden;
+
+    display: -webkit-box;
+
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+}

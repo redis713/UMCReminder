@@ -2,10 +2,12 @@ from zoneinfo import ZoneInfo
 from flask import Flask, render_template, request, redirect, url_for
 from models import db, Task, User, RecurringTask
 from config import Config
+from config_client import ConfigClient
 from flask_migrate import Migrate
 from flask import jsonify
 from datetime import datetime, timedelta, date
 from scheduler import generate_tasks, write_month
+from sqlalchemy import desc
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -191,12 +193,23 @@ def add_recurring():
     users = User.query.all()
     return render_template('add_recurring.html', users=users)
 
+
 @app.route('/delete_recurring/<int:rt_id>')
 def delete_recurring(rt_id):
     rt = RecurringTask.query.get(rt_id)
     db.session.delete(rt)
     db.session.commit()
     return redirect(url_for('recurring_list'))
+
+
+@app.route('/api/get_client_info')
+def get_client_info():
+    return jsonify({
+        "check_interval": ConfigClient.CHECK_INTERVAL,
+        "width": ConfigClient.WIDTH,
+        "height": ConfigClient.HEIGHT,
+        "title": ConfigClient.TITLE
+    })
 
 
 @app.route('/api/tasks')
@@ -220,6 +233,46 @@ def api_tasks():
         }
         for t in tasks
     ])
+
+
+@app.route('/alert_window')
+def alert_window():
+    #now = datetime.now(ZoneInfo('Asia/Irkutsk'))
+    now = datetime.now(ZoneInfo('Asia/Irkutsk')).replace(tzinfo=None)
+    future = now + timedelta(days=7)
+
+    tasks = Task.query.filter(
+        Task.completed == False,
+        Task.deadline <= future
+    ).order_by(Task.deadline).all()
+
+    prepared_tasks = []
+
+    for task in tasks:
+
+        delta = task.deadline - now
+        days_left = delta.total_seconds() / 86400
+
+        if days_left < 0:
+            priority = "overdue"
+        elif days_left <= 1:
+            priority = "danger"
+        elif days_left <= 3:
+            priority = "warning"
+        else:
+            priority = "safe"
+
+        prepared_tasks.append({
+            "task": task,
+            "priority": priority
+        })
+
+    print(prepared_tasks)
+
+
+    return render_template('alert_window.html', tasks=prepared_tasks)
+
+
 
 
 @app.before_request
