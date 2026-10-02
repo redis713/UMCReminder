@@ -37,7 +37,7 @@ html, body {
         - 2-3-4 если много
     */
     grid-template-columns:
-        repeat(auto-fit, minmax(260px, 1fr));
+        repeat(auto-fit, minmax(200px, 1fr));
 
     /*
         Карточки растягиваются
@@ -58,7 +58,8 @@ html, body {
     display: flex;
     flex-direction: column;
 
-    min-height: 140px;
+    container-type: inline-size;
+    min-height: 110px;
 
     transition: transform 0.15s;
     justify-content: center;
@@ -106,14 +107,14 @@ html, body {
 }
 
 .task-title {
-    font-size: clamp(18px, 2vw, 28px);
+    font-size: clamp(10px, 8cqw, 28px);
     font-weight: bold;
 
     margin-bottom: 10px;
 }
 
 .task-deadline {
-    font-size: clamp(15px, 1.2vw, 24px);
+    font-size: clamp(14px, 5cqw, 24px);
 
     margin-bottom: 10px;
 
@@ -122,7 +123,7 @@ html, body {
 
 .task-desc {
 
-    font-size: clamp(14px, 1.2vw, 22px);
+    font-size: clamp(12px, 5cqw, 22px);
 
     overflow: hidden;
 
